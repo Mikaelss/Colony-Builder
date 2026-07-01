@@ -1,0 +1,169 @@
+# Rust / Cargo
+/target/
+**/*.rs.bk
+Cargo.lock
+!Cargo.lock
+
+# Build artifacts
+*.rlib
+*.rmeta
+*.dSYM/
+*.pdb
+*.ilk
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Bevy / WGPU / GPU caches
+/.cache/
+/wgpu-cache/
+*.spv
+*.wgsl.tmp
+
+# Local runtime data
+/saves/
+/debug_output/
+/profiling/
+/screenshots/
+/replays/
+/crash_dumps/
+/logs/
+
+# Logs
+*.log
+*.trace
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+*.rej
+*.swp
+*.swo
+*~
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.Trashes/
+.Spotlight-V100/
+.fseventsd/
+
+# IDEs and editors
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# Zed
+.zed/
+
+# Vim / Neovim
+Session.vim
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list/
+tramp
+.\#*
+
+# Rust tooling local files
+rust-project.json
+.cargo/config.toml.local
+
+# Coverage / test artifacts
+/coverage/
+tarpaulin-report.html
+cobertura.xml
+lcov.info
+*.profraw
+*.profdata
+
+# Benchmarks and profiling generated output
+/criterion/
+/flamegraph.svg
+/perf.data
+/perf.data.old
+
+# Generated documentation
+/target/doc/
+
+# Asset pipeline generated files
+/assets/generated/
+/assets/.cache/
+/imported_assets/
+/exported_assets/
+
+# Keep source assets and vanilla data versioned
+!/assets/source/
+!/assets/vanilla/
+!/assets/README.md
+
+# Local mod development output
+/mods_local/
+/mods_debug/
+/mods_tmp/
+
+# Do not ignore actual project mod examples if intentionally created
+!/examples/mods/
+
+# Save examples may be versioned only in explicit example folders
+!/examples/saves/
+
+# Web/editor previews or local tools
+/dist/
+/build/
+/out/
+/node_modules/
+
+# Misc local databases
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+
+# Large binary captures generated locally
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.wav
+*.flac
+
+# Optional: uncomment only if generated screenshots/videos should never be tracked globally
+# *.png
+# *.jpg
+# *.jpeg
+# *.webp
