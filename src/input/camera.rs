@@ -1,22 +1,33 @@
-// NOTA: Camera mexe Transform diretamente porque é puramente
-// apresentacional. Input de gameplay (mouse, teclas de ação)
-// deve usar eventos — veja mod.rs para a estratégia.
+// NOTA: Camera mexe Transform e Projection diretamente porque é
+// puramente apresentacional. Input de gameplay (mouse, teclas de
+// ação) deve usar eventos — veja mod.rs para a estratégia.
 
 use crate::presentation::sprites::TILE_SIZE;
 use crate::world::{GRID_HEIGHT, GRID_WIDTH};
+use bevy::input::mouse::MouseWheel;
 use bevy::prelude::*;
 
-const SPEED: f32 = 600.0;
+const PAN_SPEED: f32 = 600.0;
+const ZOOM_FACTOR: f32 = 1.15;
+const MIN_SCALE: f32 = 0.1;
+const MAX_SCALE: f32 = 20.0;
 
 pub fn camera_control(
     keyboard: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
-    mut query: Query<&mut Transform, With<Camera2d>>,
+    mut scroll_events: MessageReader<MouseWheel>,
+    mut query: Query<(&mut Transform, &mut Projection), With<Camera2d>>,
 ) {
-    let mut transform = match query.single_mut() {
-        Ok(t) => t,
+    let (mut transform, mut projection) = match query.single_mut() {
+        Ok(pair) => pair,
         Err(_) => return,
     };
+
+    let ortho = match projection.as_mut() {
+        Projection::Orthographic(ortho) => ortho,
+        _ => return,
+    };
+    let scale = ortho.scale;
 
     let mut delta = Vec2::ZERO;
     if keyboard.pressed(KeyCode::KeyW) || keyboard.pressed(KeyCode::ArrowUp) {
@@ -33,10 +44,26 @@ pub fn camera_control(
     }
 
     if delta != Vec2::ZERO {
-        delta = delta.normalize() * SPEED * time.delta_secs();
+        delta = delta.normalize() * PAN_SPEED * time.delta_secs() * scale;
         transform.translation.x += delta.x;
         transform.translation.y += delta.y;
     }
+
+    let mut new_scale = scale;
+    for event in scroll_events.read() {
+        if event.y > 0.0 {
+            new_scale /= ZOOM_FACTOR;
+        } else if event.y < 0.0 {
+            new_scale *= ZOOM_FACTOR;
+        }
+    }
+    if keyboard.just_pressed(KeyCode::Equal) || keyboard.just_pressed(KeyCode::NumpadAdd) {
+        new_scale /= ZOOM_FACTOR;
+    }
+    if keyboard.just_pressed(KeyCode::Minus) || keyboard.just_pressed(KeyCode::NumpadSubtract) {
+        new_scale *= ZOOM_FACTOR;
+    }
+    ortho.scale = new_scale.clamp(MIN_SCALE, MAX_SCALE);
 
     if keyboard.just_pressed(KeyCode::KeyH) {
         let center_x = GRID_WIDTH as f32 * TILE_SIZE / 2.0;
