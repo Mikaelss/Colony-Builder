@@ -1,0 +1,32 @@
+[
+  {
+    "id": "stone",
+    "name": "Pedra",
+    "category": "Raw",
+    "stack_size": 50
+  },
+  {
+    "id": "wood",
+    "name": "Madeira",
+    "category": "Raw",
+    "stack_size": 50
+  },
+  {
+    "id": "iron_ore",
+    "name": "Minério de Ferro",
+    "category": "Raw",
+    "stack_size": 50
+  },
+  {
+    "id": "iron_ingot",
+    "name": "Barra de Ferro",
+    "category": "Refined",
+    "stack_size": 20
+  },
+  {
+    "id": "stone_axe",
+    "name": "Machado de Pedra",
+    "category": "Tool",
+    "stack_size": 1
+  }
+]

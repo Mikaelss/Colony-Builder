@@ -26,8 +26,10 @@ Ordem pré-merge: `cargo fmt --check && cargo check && cargo test && cargo clipp
 - **Sem centralizadores** — proibido criar `GameManager`, `WorldManager`, `ColonyManager` ou equivalentes.
 - **Comunicação por eventos** — sistemas não chamam lógica interna de outros domínios. Sem dependências circulares.
 - **Componentes pequenos e focados** — preferir vários componentes específicos a um genérico grande.
-- **IDs lógicos persistentes** — não usar `Entity` ID da ECS como identidade de gameplay. Usar IDs estáveis para save/load/referências.
-- **Conteúdo em definições** — evitar hardcode de gameplay em sistemas centrais. Definições com IDs estáveis e validadas.
+- **IDs lógicos persistentes** — não usar `Entity` ID da ECS como identidade de gameplay. Usar `Id<T>` (`core::identity`) para save/load/referências. Cada domínio define seu próprio marker type (ex: `Colonist`, `Building`) e usa `type ColonistId = Id<Colonist>`.
+- **EntityMap por domínio** — cada domínio mantém seu próprio `EntityMap<T>` para traduzir `Id<T>` → `Entity`. Não existe mapeamento centralizado.
+- **Alocação de IDs** — cada domínio usa `IdAllocator<T>` como recurso próprio. IDs são sequenciais dentro de uma gameplay.
+- **Conteúdo em definições** — evitar hardcode de gameplay em sistemas centrais. Definições com IDs estáveis e validadas. Carregar de `assets/definitions/` via `ItemRegistry` (e similares futuros). Registry valida duplicatas em loading.
 - **Input não altera simulação diretamente** — input/UI cria intenção → sistema valida → simulação muda → evento → UI reage.
 - **Validar antes de codificar** — não escrever código sem antes verificar se a mudança respeita os contratos arquiteturais vigentes. O agente atua como auxiliar de estrutura, não como gerador cego de código.
 - **Mudanças arquiteturais documentadas** — alterações em contratos entre sistemas, schedules, organização de plugins ou direção de dependências exigem atualização deste arquivo e/ou criação de ADR em `docs/adr/`.
