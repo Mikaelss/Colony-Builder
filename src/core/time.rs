@@ -20,6 +20,7 @@ impl TickResource {
         self.tick_count % Self::TICKS_PER_DAY
     }
 
+    #[allow(dead_code)]
     pub fn day_progress(&self) -> f64 {
         self.tick_of_day() as f64 / Self::TICKS_PER_DAY as f64
     }

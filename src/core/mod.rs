@@ -1,8 +1,10 @@
+pub mod event;
 pub mod schedule;
 pub mod state;
 pub mod time;
 
 use bevy::prelude::*;
+use event::CoreEventPlugin;
 use schedule::SimulationPhase;
 use state::GameState;
 use time::TickResource;
@@ -16,6 +18,7 @@ impl Plugin for CorePlugin {
         ));
         app.init_resource::<TickResource>();
         app.init_state::<GameState>();
+        app.add_plugins(CoreEventPlugin);
         app.configure_sets(
             FixedUpdate,
             (
