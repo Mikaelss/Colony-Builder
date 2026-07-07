@@ -1,6 +1,7 @@
 use bevy::prelude::*;
+use serde::{Deserialize, Serialize};
 
-#[derive(Resource)]
+#[derive(Resource, Serialize, Deserialize)]
 pub struct TickResource {
     pub tick_count: u64,
     pub accumulator: f64,

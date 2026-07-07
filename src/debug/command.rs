@@ -1,4 +1,5 @@
 use crate::core::definitions::item::ItemRegistry;
+use crate::core::save::SaveCommand;
 use crate::debug::DebugSettings;
 use bevy::prelude::*;
 
@@ -11,7 +12,8 @@ pub fn handle_debug_input(
     keys: Res<ButtonInput<KeyCode>>,
     mut settings: ResMut<DebugSettings>,
     registry: Option<Res<ItemRegistry>>,
-    mut writer: MessageWriter<DebugCommand>,
+    mut cmd_writer: MessageWriter<DebugCommand>,
+    mut save_writer: MessageWriter<SaveCommand>,
     mut current_spawn: Local<usize>,
 ) {
     if keys.just_pressed(KeyCode::F3) {
@@ -45,6 +47,18 @@ pub fn handle_debug_input(
         return;
     }
 
+    if keys.just_pressed(KeyCode::F5) {
+        save_writer.write(SaveCommand::Save("save_0".into()));
+        println!("[Debug] Save triggered");
+        return;
+    }
+
+    if keys.just_pressed(KeyCode::F9) {
+        save_writer.write(SaveCommand::Load("save_0".into()));
+        println!("[Debug] Load triggered");
+        return;
+    }
+
     if keys.just_pressed(KeyCode::KeyG) {
         let registry = match registry {
             Some(ref r) => r,
@@ -56,7 +70,7 @@ pub fn handle_debug_input(
         }
         *current_spawn = (*current_spawn + 1) % items.len();
         let def = items[*current_spawn];
-        writer.write(DebugCommand::SpawnItem(def.id.clone()));
+        cmd_writer.write(DebugCommand::SpawnItem(def.id.clone()));
         if settings.show_spawns {
             println!("[Debug] Spawning: {}", def.name);
         }

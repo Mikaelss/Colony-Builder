@@ -3,17 +3,18 @@
 pub mod terrain;
 
 use bevy::prelude::*;
+use serde::{Deserialize, Serialize};
 use terrain::TerrainType;
 
 pub const GRID_WIDTH: u32 = 275;
 pub const GRID_HEIGHT: u32 = 275;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Tile {
     pub terrain: TerrainType,
 }
 
-#[derive(Resource, Debug)]
+#[derive(Resource, Debug, Serialize, Deserialize)]
 pub struct TileGrid {
     tiles: Vec<Tile>,
     width: u32,
@@ -47,6 +48,24 @@ impl TileGrid {
 
     pub fn tiles(&self) -> &[Tile] {
         &self.tiles
+    }
+
+    pub fn from_save(width: u32, height: u32, tile_data: &[u8]) -> Self {
+        let tiles = tile_data
+            .iter()
+            .map(|&b| Tile {
+                terrain: TerrainType::from_u8(b).expect("Invalid tile data"),
+            })
+            .collect();
+        Self {
+            tiles,
+            width,
+            height,
+        }
+    }
+
+    pub fn to_tile_data(&self) -> Vec<u8> {
+        self.tiles.iter().map(|t| t.terrain.to_u8()).collect()
     }
 
     fn generate(width: u32, height: u32) -> Self {
