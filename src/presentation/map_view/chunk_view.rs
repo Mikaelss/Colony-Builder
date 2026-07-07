@@ -1,5 +1,4 @@
 use crate::presentation::sprites::TILE_SIZE;
-use crate::presentation::texture_def::TextureDefs;
 use crate::world::terrain::TerrainType;
 use crate::world::{GRID_HEIGHT, GRID_WIDTH, SEED, TileGrid, hash2d};
 use bevy::asset::RenderAssetUsages;
@@ -13,10 +12,11 @@ pub fn spawn_chunks(
     grid: Res<TileGrid>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    texture_defs: Option<Res<TextureDefs>>,
 ) {
     let chunks_x = GRID_WIDTH.div_ceil(CHUNK_SIZE_TILES);
     let chunks_y = GRID_HEIGHT.div_ceil(CHUNK_SIZE_TILES);
+
+    let white_material = materials.add(ColorMaterial::default());
     let mut spawned = 0;
 
     for cy in 0..chunks_y {
@@ -25,18 +25,13 @@ pub fn spawn_chunks(
             let offset_y = cy as f32 * CHUNK_SIZE_TILES as f32 * TILE_SIZE;
 
             for terrain in [TerrainType::Water, TerrainType::Dirt, TerrainType::Stone] {
-                let mesh = build_terrain_mesh(&grid, cx, cy, terrain, texture_defs.as_deref());
+                let mesh = build_terrain_mesh(&grid, cx, cy, terrain);
                 let Some(mesh) = mesh else { continue };
-
-                let material = texture_defs
-                    .as_ref()
-                    .and_then(|defs| material_for_terrain(terrain, &defs.dirt, &mut materials))
-                    .unwrap_or_else(|| materials.add(ColorMaterial::default()));
 
                 let mesh_handle = meshes.add(mesh);
                 commands.spawn((
                     Mesh2d(mesh_handle),
-                    MeshMaterial2d(material),
+                    MeshMaterial2d(white_material.clone()),
                     Transform::from_xyz(offset_x, offset_y, 0.0),
                     GlobalTransform::default(),
                     Visibility::default(),
@@ -49,27 +44,7 @@ pub fn spawn_chunks(
     info!("[ChunkView] Spawned {spawned} chunk meshes ({chunks_x}×{chunks_y} chunks)");
 }
 
-fn material_for_terrain(
-    terrain: TerrainType,
-    def: &crate::presentation::texture_def::TextureDef,
-    materials: &mut Assets<ColorMaterial>,
-) -> Option<Handle<ColorMaterial>> {
-    match terrain {
-        TerrainType::Dirt => Some(materials.add(ColorMaterial {
-            texture: Some(def.atlas.clone()),
-            ..Default::default()
-        })),
-        _ => None,
-    }
-}
-
-fn build_terrain_mesh(
-    grid: &TileGrid,
-    cx: u32,
-    cy: u32,
-    target: TerrainType,
-    texture_defs: Option<&TextureDefs>,
-) -> Option<Mesh> {
+fn build_terrain_mesh(grid: &TileGrid, cx: u32, cy: u32, target: TerrainType) -> Option<Mesh> {
     let start_x = cx * CHUNK_SIZE_TILES;
     let start_y = cy * CHUNK_SIZE_TILES;
     let end_x = (start_x + CHUNK_SIZE_TILES).min(grid.width());
@@ -77,9 +52,7 @@ fn build_terrain_mesh(
 
     let mut positions: Vec<[f32; 3]> = Vec::new();
     let mut colors: Vec<[f32; 4]> = Vec::new();
-    let mut uvs: Vec<[f32; 2]> = Vec::new();
     let mut indices: Vec<u32> = Vec::new();
-    let has_texture = texture_defs.is_some();
 
     for ly in 0..(end_y - start_y) {
         for lx in 0..(end_x - start_x) {
@@ -106,17 +79,8 @@ fn build_terrain_mesh(
                 [x0, y1, 0.0],
             ]);
 
-            if target == TerrainType::Dirt && has_texture {
-                let defs = texture_defs.unwrap();
-                let variant = defs.dirt.pick_variant(wx, wy);
-                let tile_count = defs.dirt.variant_count as f32;
-                let u0 = variant as f32 / tile_count;
-                let u1 = (variant as f32 + 1.0) / tile_count;
-                uvs.extend_from_slice(&[[u0, 0.0], [u1, 0.0], [u1, 1.0], [u0, 1.0]]);
-            } else {
-                let color = tile_color(target, wx, wy);
-                colors.extend_from_slice(&[color, color, color, color]);
-            }
+            let color = tile_color(target, wx, wy);
+            colors.extend_from_slice(&[color, color, color, color]);
 
             indices.extend_from_slice(&[vi, vi + 1, vi + 2, vi, vi + 2, vi + 3]);
         }
@@ -131,11 +95,7 @@ fn build_terrain_mesh(
         RenderAssetUsages::default(),
     );
     mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
-    if has_texture && target == TerrainType::Dirt {
-        mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, uvs);
-    } else {
-        mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, colors);
-    }
+    mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, colors);
     mesh.insert_indices(Indices::U32(indices));
     Some(mesh)
 }
