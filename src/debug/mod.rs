@@ -3,6 +3,7 @@ mod print;
 mod spawner;
 
 use crate::core::identity::{EntityMap, IdAllocator};
+use crate::core::state::GameState;
 use bevy::prelude::*;
 use command::DebugCommand;
 
@@ -33,7 +34,8 @@ impl Plugin for DebugPlugin {
                 spawner::handle_spawn_command,
                 print::tick_log,
                 print::render_metrics,
-            ),
+            )
+                .run_if(in_state(GameState::Playing)),
         );
     }
 }

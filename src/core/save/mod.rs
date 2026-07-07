@@ -1,6 +1,7 @@
 pub mod data;
 
 use crate::core::save::data::{SaveData, TickSave, WorldSave};
+use crate::core::state::GameState;
 use crate::core::time::TickResource;
 use crate::world::TileGrid;
 use bevy::prelude::*;
@@ -18,7 +19,10 @@ pub struct SavePlugin;
 impl Plugin for SavePlugin {
     fn build(&self, app: &mut App) {
         app.add_message::<SaveCommand>();
-        app.add_systems(Update, (save_game, load_game));
+        app.add_systems(
+            Update,
+            (save_game, load_game).run_if(in_state(GameState::Playing)),
+        );
     }
 }
 
