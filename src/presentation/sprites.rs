@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use crate::world::terrain::TerrainType;
 use bevy::asset::RenderAssetUsages;
 use bevy::prelude::*;
