@@ -37,6 +37,7 @@ Ordem pré-merge: `cargo fmt --check && cargo check && cargo test && cargo clipp
 - **Eventos para consumo imediato** — eventos (`TickEvent`, etc.) carregam dados prontos para consumo (ex: `tick`, `day`, `tick_of_day`). Nenhum sistema deve extrair campos de um evento para armazenamento persistente.
 - **Tick bruto como verdade (`u64`)** — ticks são a unidade de persistência. Dias e horas são derivados de `tick * constantes`. Constantes (`TICKS_PER_DAY`, etc.) são a régua de conversão para exibição. Se a régua mudar, o tick continua válido.
 - **Coesão de domínio** — tick gerencia dia (grupo de ticks). Marcos derivados (amanhecer, hora cheia) são detectados por `tick_of_day % X`. Se um marco for usado por ≥ 2 sistemas distintos, vira evento próprio no módulo que define a divisão.
+- **Debug isolado e descartável** — `debug/` nunca é importado por nenhum outro módulo. Todo terminal output passa por `DebugSettings` (`dev_mode` desligado = zero output). Remover `DebugPlugin` de `main.rs` não afeta gameplay.
 
 ## Idioma
 
