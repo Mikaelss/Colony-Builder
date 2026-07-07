@@ -8,6 +8,15 @@ use terrain::TerrainType;
 
 pub const GRID_WIDTH: u32 = 275;
 pub const GRID_HEIGHT: u32 = 275;
+pub const SEED: u32 = 0;
+
+pub fn hash2d(x: u32, y: u32, seed: u32) -> u32 {
+    let h = x
+        .wrapping_mul(374761393)
+        .wrapping_add(y.wrapping_mul(668265263))
+        .wrapping_add(seed);
+    h.wrapping_mul(h.wrapping_add(0x9e3779b9)) ^ h >> 13
+}
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Tile {
