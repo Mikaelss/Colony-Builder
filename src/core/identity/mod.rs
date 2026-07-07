@@ -4,8 +4,16 @@ use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::marker::PhantomData;
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Id<T>(u64, PhantomData<T>);
+
+impl<T> Clone for Id<T> {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+
+impl<T> Copy for Id<T> {}
 
 impl<T> Hash for Id<T> {
     fn hash<H: Hasher>(&self, state: &mut H) {
@@ -36,10 +44,19 @@ pub struct IdComponent<T: 'static + Send + Sync> {
     pub id: Id<T>,
 }
 
-#[derive(Resource, Default)]
+#[derive(Resource)]
 pub struct IdAllocator<T> {
     next: u64,
     _marker: PhantomData<T>,
+}
+
+impl<T> Default for IdAllocator<T> {
+    fn default() -> Self {
+        Self {
+            next: 0,
+            _marker: PhantomData,
+        }
+    }
 }
 
 impl<T> IdAllocator<T> {
@@ -53,10 +70,19 @@ impl<T> IdAllocator<T> {
     }
 }
 
-#[derive(Resource, Default)]
+#[derive(Resource)]
 pub struct EntityMap<T> {
     map: HashMap<Id<T>, Entity>,
     _marker: PhantomData<T>,
+}
+
+impl<T> Default for EntityMap<T> {
+    fn default() -> Self {
+        Self {
+            map: HashMap::new(),
+            _marker: PhantomData,
+        }
+    }
 }
 
 impl<T> EntityMap<T> {

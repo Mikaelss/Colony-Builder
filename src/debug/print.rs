@@ -1,12 +1,34 @@
+use crate::core::event::TickEvent;
+use crate::core::time::TickResource;
+use crate::debug::DebugSettings;
 use crate::presentation::sprites::TILE_SIZE;
 use bevy::prelude::*;
 
-pub fn log_render_metrics(
+pub fn tick_log(settings: Res<DebugSettings>, mut reader: MessageReader<TickEvent>) {
+    if !settings.dev_mode || !settings.show_tick {
+        return;
+    }
+    for ev in reader.read() {
+        println!(
+            "[Tick] Dia {}, tick {}/{} ({:.1}%)",
+            ev.day + 1,
+            ev.tick_of_day,
+            TickResource::TICKS_PER_DAY,
+            ev.tick_of_day as f64 / TickResource::TICKS_PER_DAY as f64 * 100.0,
+        );
+    }
+}
+
+pub fn render_metrics(
+    settings: Res<DebugSettings>,
     camera_query: Query<&Projection, With<Camera2d>>,
     window_query: Query<&Window>,
     time: Res<Time>,
     mut frame_counter: Local<u32>,
 ) {
+    if !settings.dev_mode || !settings.show_metrics {
+        return;
+    }
     *frame_counter += 1;
     if !(*frame_counter).is_multiple_of(60) {
         return;
