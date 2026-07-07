@@ -31,6 +31,14 @@ pub struct TileGrid {
 }
 
 impl TileGrid {
+    pub fn from_tiles(tiles: Vec<Tile>, width: u32, height: u32) -> Self {
+        Self {
+            tiles,
+            width,
+            height,
+        }
+    }
+
     fn index(&self, x: u32, y: u32) -> Option<usize> {
         if x < self.width && y < self.height {
             Some((y * self.width + x) as usize)
@@ -109,7 +117,7 @@ impl TileGrid {
         count
     }
 
-    fn generate(width: u32, height: u32) -> Self {
+    pub fn generate(width: u32, height: u32) -> Self {
         let mut tiles = Vec::with_capacity((width * height) as usize);
 
         for y in 0..height {

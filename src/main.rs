@@ -1,17 +1,10 @@
-mod core;
-mod debug;
-mod input;
-mod presentation;
-mod simulation;
-mod world;
-
+use Colony_Builder::core::CorePlugin;
+use Colony_Builder::debug::DebugPlugin;
+use Colony_Builder::input::InputPlugin;
+use Colony_Builder::presentation::PresentationPlugin;
+use Colony_Builder::simulation::SimulationPlugin;
+use Colony_Builder::world::WorldPlugin;
 use bevy::prelude::*;
-use core::CorePlugin;
-use debug::DebugPlugin;
-use input::InputPlugin;
-use presentation::PresentationPlugin;
-use simulation::SimulationPlugin;
-use world::WorldPlugin;
 
 fn main() {
     App::new()
