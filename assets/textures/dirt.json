@@ -1,0 +1,6 @@
+{
+  "base_tile_size": 64,
+  "render_size": 64,
+  "variations": 3,
+  "layout_type": "horizontal"
+}
