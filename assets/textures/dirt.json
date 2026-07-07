@@ -1,10 +1,6 @@
 {
-  "tile_width": 64,
-  "tile_height": 64,
-  "variants": [
-    { "name": "clean", "weight": 50 },
-    { "name": "dark", "weight": 25 },
-    { "name": "light", "weight": 25 }
-  ],
-  "rotation": false
+  "base_tile_size": 64,
+  "render_size": 64,
+  "variations": 3,
+  "layout_type": "horizontal"
 }
