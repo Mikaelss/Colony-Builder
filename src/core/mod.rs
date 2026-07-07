@@ -1,6 +1,7 @@
 pub mod definitions;
 pub mod event;
 pub mod identity;
+pub mod save;
 pub mod schedule;
 pub mod state;
 pub mod time;
@@ -8,6 +9,7 @@ pub mod time;
 use bevy::prelude::*;
 use definitions::DefinitionPlugin;
 use event::CoreEventPlugin;
+use save::SavePlugin;
 use schedule::SimulationPhase;
 use state::GameState;
 use time::TickResource;
@@ -21,7 +23,7 @@ impl Plugin for CorePlugin {
         ));
         app.init_resource::<TickResource>();
         app.init_state::<GameState>();
-        app.add_plugins((CoreEventPlugin, DefinitionPlugin));
+        app.add_plugins((CoreEventPlugin, DefinitionPlugin, SavePlugin));
         app.configure_sets(
             FixedUpdate,
             (

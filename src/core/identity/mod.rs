@@ -68,6 +68,10 @@ impl<T> IdAllocator<T> {
     pub fn current(&self) -> Id<T> {
         Id::new(self.next)
     }
+
+    pub fn set_next(&mut self, value: u64) {
+        self.next = value;
+    }
 }
 
 #[derive(Resource)]
